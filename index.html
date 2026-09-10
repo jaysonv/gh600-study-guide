@@ -3,233 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GH-600 Agentic AI Developer Simulator</title>
-    <style>
-        :root {
-            --bg-color: #f4f7f6;
-            --text-color: #333;
-            --primary-color: #2da44e;
-            --secondary-color: #0366d6;
-            --card-bg: #fff;
-            --border-color: #e1e4e8;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1 { text-align: center; color: var(--secondary-color); }
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .options { list-style-type: none; padding: 0; }
-        .options li {
-            background: var(--bg-color);
-            margin: 8px 0;
-            padding: 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            transition: 0.2s;
-        }
-        .options li:hover { background: #e1e4e8; }
-        .options li.selected { border-color: var(--secondary-color); background-color: #eaf5ff; }
-        .options li.correct { border-color: var(--primary-color); background-color: #dcffe4; }
-        .options li.incorrect { border-color: #cb2431; background-color: #ffeef0; }
-        .btn {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        .btn:hover { background-color: #2c974b; }
-        .btn:disabled { background-color: #94d3a2; cursor: not-allowed; }
-        #explanation {
-            display: none;
-            margin-top: 15px;
-            padding: 15px;
-            background-color: #f1f8ff;
-            border-left: 4px solid var(--secondary-color);
-        }
-        #results { display: none; text-align: center; }
-        .progress { font-size: 14px; color: #586069; margin-bottom: 10px; }
-    </style>
+    <title>GH-600 Exam Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
+        <header class="mb-8 border-b pb-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-blue-600">GH-600: Agentic AI Developer Simulator</h1>
+                <p class="text-sm text-gray-500 mt-1">Simulated Exam Mode</p>
+            </div>
+            <span id="progress" class="text-sm font-semibold bg-blue-100 text-blue-800 py-1 px-3 rounded-full"></span>
+        </header>
 
-    <h1>GH-600 Exam Simulator</h1>
-    
-    <div id="quiz-container" class="card">
-        <div class="progress" id="progress-text">Question 1 of 5</div>
-        <h3 id="question-text"></h3>
-        <ul class="options" id="options-list"></ul>
-        <button id="submit-btn" class="btn">Submit Answer</button>
-        <button id="next-btn" class="btn" style="display:none;">Next Question</button>
-        
-        <div id="explanation"></div>
+        <!-- Exam UI -->
+        <div id="quiz-container">
+            <div class="mb-2 text-sm font-bold text-gray-500 uppercase tracking-wide" id="domain-text"></div>
+            <h2 id="question-text" class="text-xl font-medium mb-6">Loading question...</h2>
+            
+            <div id="options-container" class="space-y-3">
+                <!-- Options injected via JS -->
+            </div>
+            
+            <div class="mt-8 flex justify-between items-center pt-4 border-t">
+                <button id="prev-btn" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors">
+                    Previous
+                </button>
+                <button id="next-btn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">
+                    Next
+                </button>
+                <button id="submit-btn" class="hidden px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md transition-colors shadow-md">
+                    Submit Exam
+                </button>
+            </div>
+        </div>
+
+        <!-- Results UI -->
+        <div id="results-container" class="hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-2">Exam Evaluation</h2>
+                <div id="pass-fail-badge" class="inline-block text-lg font-bold py-2 px-6 rounded-full mb-4"></div>
+                <p id="score-text" class="text-xl text-gray-700"></p>
+            </div>
+            
+            <h3 class="text-xl font-bold border-b pb-2 mb-4">Detailed Review</h3>
+            <div id="review-container" class="space-y-6 max-h-[500px] overflow-y-auto pr-2">
+                <!-- Detailed feedback injected here -->
+            </div>
+
+            <div class="mt-8 text-center pt-4 border-t">
+                <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded shadow-md transition-colors">
+                    Start New Exam Session
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div id="results" class="card">
-        <h2>Simulation Complete!</h2>
-        <h3 id="score-text"></h3>
-        <button class="btn" onclick="location.reload()">Restart Simulator</button>
-    </div>
-
-<script>
-const quizData = [
-    {
-        question: "You are integrating an autonomous agent into a CI workflow. To prevent the agent from taking irreversible actions in the main branch without approval, what is the best approach?",
-        options: [
-            "A) Grant the agent full admin rights but instruct it to write logs.",
-            "B) Configure the agent's scope strictly to a branch-based environment and require human-in-the-loop review for pull requests.",
-            "C) Disable the agent's memory to ensure it doesn't remember previous irreversible actions.",
-            "D) Allow the agent to bypass checks if the confidence score is above 95%."
-        ],
-        correct: 1, // Index 1 is B
-        explanation: "To implement guardrails and accountability, you should scope permissions (branch-based scope) and require human judgment (human-in-the-loop) for compliance-sensitive or irreversible changes before merging to main."
-    },
-    {
-        question: "Your multi-agent workflow is experiencing failures because agents are repeating steps and diverging from prior decisions. Which area needs tuning?",
-        options: [
-            "A) MCP allow lists.",
-            "B) Agent isolation for parallel execution.",
-            "C) Memory expiration, persisting agent state, and managing context drift.",
-            "D) Rollback escalation paths."
-        ],
-        correct: 2, // Index 2 is C
-        explanation: "Managing memory and state includes persisting agent state, detecting/correcting context drift, and capturing task progress as durable artifacts to resume work without repeating steps."
-    },
-    {
-        question: "How should you securely provide an AI agent with access to external internal tools and enterprise data without hardcoding credentials into the agent's prompt?",
-        options: [
-            "A) Store the credentials in an unencrypted artifact for the agent to read.",
-            "B) Configure a Model Context Protocol (MCP) server as a tool and use MCP registries/allow lists.",
-            "C) Ask the agent to prompt the user for the password during execution.",
-            "D) Turn off the agent's environment constraints so it can query the database directly."
-        ],
-        correct: 1,
-        explanation: "The Model Context Protocol (MCP) securely connects AI models to different data sources and tools. Configuring an MCP server as a tool is the standard GH-600 approach to managing external environment interaction securely."
-    },
-    {
-        question: "You have a multi-agent system where one agent writes infrastructure code and another deploys it. You want to ensure the delivery speed is maximized while remaining compliant with security standards. What is the recommended SDLC design?",
-        options: [
-            "A) Require human approval for every single command executed by the agents.",
-            "B) Classify agent actions by risk to right-size human interventions, blocking policy violations automatically while minimizing unnecessary approvals.",
-            "C) Isolate the agents completely so they cannot share any state or context.",
-            "D) Have the agents evaluate their own security compliance before deployment."
-        ],
-        correct: 1,
-        explanation: "The goal of implementing guardrails is to preserve execution velocity by right-sizing interventions based on risk level, rather than requiring approvals that do not materially reduce risk."
-    },
-    {
-        question: "When orchestrating multi-agent coordination, how can you best detect and resolve agent conflicts, such as overlapping code changes?",
-        options: [
-            "A) Disable parallel execution entirely and force agents to run synchronously on a single thread.",
-            "B) Configure observability using logs, artifacts, and operational signals, and document handoffs across agents.",
-            "C) Increase the temperature of the underlying LLM to encourage creative conflict resolution.",
-            "D) Delete the agents' short-term memory after every step."
-        ],
-        correct: 1,
-        explanation: "Observability is key in multi-agent orchestration. By logging behavior, producing inspectable artifacts, and documenting key handoffs, you can effectively detect overlapping effort or degraded behavior without destroying pipeline velocity."
-    }
-];
-
-let currentQuestionIndex = 0;
-let score = 0;
-let selectedOption = null;
-
-const questionText = document.getElementById("question-text");
-const optionsList = document.getElementById("options-list");
-const submitBtn = document.getElementById("submit-btn");
-const nextBtn = document.getElementById("next-btn");
-const explanationDiv = document.getElementById("explanation");
-const progressText = document.getElementById("progress-text");
-const quizContainer = document.getElementById("quiz-container");
-const resultsContainer = document.getElementById("results");
-const scoreText = document.getElementById("score-text");
-
-function loadQuestion() {
-    selectedOption = null;
-    submitBtn.disabled = true;
-    submitBtn.style.display = "inline-block";
-    nextBtn.style.display = "none";
-    explanationDiv.style.display = "none";
-    
-    const currentQ = quizData[currentQuestionIndex];
-    questionText.innerText = currentQ.question;
-    progressText.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
-    
-    optionsList.innerHTML = "";
-    currentQ.options.forEach((opt, index) => {
-        const li = document.createElement("li");
-        li.innerText = opt;
-        li.onclick = () => selectOption(li, index);
-        optionsList.appendChild(li);
-    });
-}
-
-function selectOption(li, index) {
-    if (explanationDiv.style.display === "block") return; // Prevent changing answer after submit
-    
-    const options = document.querySelectorAll(".options li");
-    options.forEach(o => o.classList.remove("selected"));
-    
-    li.classList.add("selected");
-    selectedOption = index;
-    submitBtn.disabled = false;
-}
-
-submitBtn.onclick = () => {
-    if (selectedOption === null) return;
-    
-    const currentQ = quizData[currentQuestionIndex];
-    const options = document.querySelectorAll(".options li");
-    
-    if (selectedOption === currentQ.correct) {
-        options[selectedOption].classList.add("correct");
-        score++;
-    } else {
-        options[selectedOption].classList.add("incorrect");
-        options[currentQ.correct].classList.add("correct");
-    }
-    
-    explanationDiv.innerHTML = `<strong>Explanation:</strong> ${currentQ.explanation}`;
-    explanationDiv.style.display = "block";
-    submitBtn.style.display = "none";
-    nextBtn.style.display = "inline-block";
-};
-
-nextBtn.onclick = () => {
-    currentQuestionIndex++;
-    if (currentQuestionIndex < quizData.length) {
-        loadQuestion();
-    } else {
-        showResults();
-    }
-};
-
-function showResults() {
-    quizContainer.style.display = "none";
-    resultsContainer.style.display = "block";
-    const percent = Math.round((score / quizData.length) * 100);
-    scoreText.innerText = `You scored ${score} out of ${quizData.length} (${percent}%)`;
-}
-
-// Initialize
-loadQuestion();
-</script>
+    <script src="questions.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
